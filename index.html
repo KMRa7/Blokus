@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>クリスマスパーティー アンケートフォーム</title>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding-top: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #13ca5e, #0fa958);
+            color: white;
+            padding: 20px;
+            border-radius: 0 15px 0px 45px;
+            text-align: center;
+            display: block;
+            margin: -20px -15px 20px -15px;
+            font-size: 24px;
+            font-weight: 600;
+            box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-text {
+            margin: 10px 0 20px;
+            font-size: 14px;
+            color: #333;
+            background-color: #f8f9fa;
+            line-height: 1.8;
+            text-align: left;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+        }
+
+        .label {
+            display: block;
+            margin-bottom: 10px;
+            padding: 3px;
+            font-weight: 600;
+            background-color: #13ca5e;
+            color: white;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .required {
+            color: #ffffff;
+            font-weight: lighter;
+            font-size: 0.6em;
+            margin-left: 5px;
+            vertical-align: 0.8em;
+            background-color: rgb(255, 15, 15);
+            padding: 0 5px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+
+        .date-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .date-buttons button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background-color: #f7f7f7;
+            cursor: pointer;
+            box-sizing: border-box;
+            text-align: center;
+            white-space: nowrap;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background-color: #e9e9e9;
+            transform: scale(1.02);
+        }
+
+        button.active {
+            background-color: #444;
+            color: #fff;
+            outline: 2px solid #696969;
+            outline-offset: 2px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 6px;
+            background-color: #dc3545;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-button:hover {
+            background-color: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .date-buttons button {
+                font-size: 14px;
+            }
+
+            .submit-button {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>クリスマスパーティー<br>アンケートフォーム</h1>
+
+        <div class="info-text">
+            下記よりご希望の日程をお知らせください。<br>
+            ご協力ありがとうございます。
+        </div>
+
+        <div class="label">
+            <span class="required">必須</span>
+            クリスマスパーティー開催希望日を教えてください
+        </div>
+
+        <div class="date-buttons">
+            <button type="button" onclick="selectDate(this)">13日</button>
+            <button type="button" onclick="selectDate(this)">20日</button>
+            <button type="button" onclick="selectDate(this)">どちらでも良い</button>
+        </div>
+
+        <button class="submit-button" onclick="submitForm()">送信</button>
+    </div>
+
+    <!-- LIFF SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script>
+        let selectedDate = '';
+
+        // LIFF初期化
+        document.addEventListener('DOMContentLoaded', function () {
+            liff.init({
+                liffId: '2005254357-zKma9BZk' // ご自身のLIFF IDを設定
+            }).then(() => {
+                console.log('LIFF初期化成功');
+            }).catch((err) => {
+                console.error('LIFF初期化失敗', err);
+            });
+        });
+
+        // 日付選択（単一選択）
+        function selectDate(element) {
+            const buttons = document.querySelectorAll('.date-buttons button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            element.classList.add('active');
+            selectedDate = element.innerText;
+        }
+
+        function submitForm() {
+            if (!selectedDate) {
+                alert('開催希望日を選択してください。');
+                return;
+            }
+
+            const textMessage =
+                `≪クリスマスパーティー開催希望日アンケート≫\n` +
+                `【開催希望日】\n・${selectedDate}`;
+
+            liff.sendMessages([{
+                type: 'text',
+                text: textMessage
+            }]).then(() => {
+                alert('ご回答ありがとうございます。');
+                liff.closeWindow();
+            }).catch((err) => {
+                console.error('メッセージの送信に失敗しました', err);
+            });
+        }
+    </script>
+</body>
+
+</html>
